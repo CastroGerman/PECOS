@@ -1,7 +1,7 @@
 /* 
- * File:   PecosMonitor.h
+ * File: PecosMonitor.h
  * 
- * This file was made following the official ARM®v7-M Architecture Reference Manual
+ * This file was made following the official ARMï¿½v7-M Architecture Reference Manual
  * https://web.eecs.umich.edu/~prabal/teaching/eecs373-f10/readings/ARMv7-M_ARM.pdf
  * 
  * Author: German Castro
@@ -46,6 +46,46 @@ UsageFaultManagerSignal UsageFaultManager_EnableTrap_DIV0TRP(UsageFaultManager *
 uint8_t UsageFaultManager_GetTrapStatus_DIV0TRP(UsageFaultManager * const me);
 void UsageFaultManager_ctor(UsageFaultManager * const me, volatile uint32_t *CCR, volatile uint32_t *CFSR, volatile uint32_t *SHCSR);
 
+
+/*------ Bus Fault Manager Facilities ------*/
+
+typedef enum BusFaultManagerSignal {
+	BUSFAULTMANAGER_OK_SIG,
+	BUSFAULTMANAGER_ERROR_SIG
+}BusFaultManagerSignal;
+
+typedef struct BusFaultManager BusFaultManager;
+
+typedef struct BusFaultManagerVT {
+	BusFaultManagerSignal (*ClearTrapStatus_DIV0TRP)(BusFaultManager * const me);
+	BusFaultManagerSignal (*EnableHandler)(BusFaultManager * const me);
+	BusFaultManagerSignal (*EnableTrap_DIV0TRP)(BusFaultManager * const me);
+	uint8_t (*GetTrapStatus_BFARVALID)(BusFaultManager * const me);
+	uint8_t (*GetTrapStatus_LSPERR)(BusFaultManager * const me);
+	uint8_t (*GetTrapStatus_STKERR)(BusFaultManager * const me);
+	uint8_t (*GetTrapStatus_UNSTKERR)(BusFaultManager * const me);
+	uint8_t (*GetTrapStatus_IMPRECISERR)(BusFaultManager * const me);
+	uint8_t (*GetTrapStatus_PRECISERR)(BusFaultManager * const me);
+}BusFaultManagerVT;
+
+struct BusFaultManager {
+	const struct BusFaultManagerVT *vptr; /* Virtual Pointer */
+	volatile uint32_t *CCR; /* Configuration Control Register */
+	volatile uint32_t *CFSR; /* Configurable Fault Status Register */
+	volatile uint32_t *SHCSR; /* System Handler Control and State Register */
+};
+
+BusFaultManagerSignal BusFaultManager_ClearTrapStatus_DIV0TRP(BusFaultManager * const me);
+BusFaultManagerSignal BusFaultManager_EnableHandler(BusFaultManager * const me);
+BusFaultManagerSignal BusFaultManager_EnableTrap_DIV0TRP(BusFaultManager * const me);
+uint8_t BusFaultManager_GetTrapStatus_BFARVALID(BusFaultManager * const me);
+uint8_t BusFaultManager_GetTrapStatus_LSPERR(BusFaultManager * const me);
+uint8_t BusFaultManager_GetTrapStatus_STKERR(BusFaultManager * const me);
+uint8_t BusFaultManager_GetTrapStatus_UNSTKERR(BusFaultManager * const me);
+uint8_t BusFaultManager_GetTrapStatus_IMPRECISERR(BusFaultManager * const me);
+uint8_t BusFaultManager_GetTrapStatus_PRECISERR(BusFaultManager * const me);
+void BusFaultManager_ctor(BusFaultManager * const me, volatile uint32_t *CCR, volatile uint32_t *CFSR, volatile uint32_t *SHCSR);
+
 /*------ System Manager Facilities ------*/
 
 typedef enum SystemManagerSignal {
@@ -89,6 +129,7 @@ struct PecosMonitor {
 	uint32_t excReturn;
 	SystemManager sysMngr;
 	UsageFaultManager usgFltMngr;
+    BusFaultManager busFltMngr;
 };
 
 PecosMonitorSignal PecosMonitor_PrintFaultStackFrame(PecosMonitor * const me, uint32_t calleeStackSizeUsed);

@@ -71,12 +71,13 @@ int main ( void )
     pecosMonitor.usgFltMngr.vptr->EnableTrap_DIV0TRP(&(pecosMonitor.usgFltMngr));
     pecosMonitor.usgFltMngr.vptr->EnableHandler(&(pecosMonitor.usgFltMngr));
     LED_Off();
+    printf("Starting PECOS test.\r\n");
 
     while ( true )
     {
-        for(int i = 0; i < 1000000000; ++i){}
+        //for(int i = 0; i < 1000000000; ++i){}
         LED_Toggle();
-        printf("Keep Alive\r\n");
+        //printf("Keep Alive\r\n");
         uint32_t vector[4] = {1, 2, 4, 6};
         VarianTheFirst(vector, (sizeof(vector) / sizeof(vector[0])));
     }

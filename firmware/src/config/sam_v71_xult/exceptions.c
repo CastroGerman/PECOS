@@ -61,6 +61,8 @@ void __attribute__((noreturn)) NonMaskableInt_Handler(void)
 #if defined(__DEBUG) || defined(__DEBUG_D) && defined(__XC32)
     __builtin_software_breakpoint();
 #endif
+    printf("NMI\r\n");
+    pecosMonitor.sysMngr.vptr->ResetSystem(&(pecosMonitor.sysMngr));
     while (true)
     {
     }
@@ -71,6 +73,9 @@ void __attribute__((noreturn)) HardFault_Handler(void)
 #if defined(__DEBUG) || defined(__DEBUG_D) && defined(__XC32)
    __builtin_software_breakpoint();
 #endif
+
+    printf("HardFault\r\n");
+    pecosMonitor.sysMngr.vptr->ResetSystem(&(pecosMonitor.sysMngr));
    while (true)
    {
    }
@@ -81,6 +86,8 @@ void __attribute__((noreturn)) DebugMonitor_Handler(void)
 #if defined(__DEBUG) || defined(__DEBUG_D) && defined(__XC32)
    __builtin_software_breakpoint();
 #endif
+    printf("DebugMonitor\r\n");
+    pecosMonitor.sysMngr.vptr->ResetSystem(&(pecosMonitor.sysMngr));
    while (true)
    {
    }
@@ -91,6 +98,8 @@ void __attribute__((noreturn)) MemoryManagement_Handler(void)
 #if defined(__DEBUG) || defined(__DEBUG_D) && defined(__XC32)
    __builtin_software_breakpoint();
 #endif
+    printf("MemoryManagement\r\n");
+    pecosMonitor.sysMngr.vptr->ResetSystem(&(pecosMonitor.sysMngr));
    while (true)
    {
    }
@@ -100,7 +109,27 @@ void __attribute__((noreturn)) BusFault_Handler(void)
 {
 #if defined(__DEBUG) || defined(__DEBUG_D) && defined(__XC32)
    __builtin_software_breakpoint();
-#endif
+#endif    
+    printf("BusFault\r\n");
+    if (pecosMonitor.busFltMngr.vptr->GetTrapStatus_BFARVALID(&(pecosMonitor.busFltMngr)) != 0) {       
+		printf("BFARVALID\r\n");
+    }
+    if (pecosMonitor.busFltMngr.vptr->GetTrapStatus_IMPRECISERR(&(pecosMonitor.busFltMngr)) != 0) {       
+		printf("IMPRECISERR\r\n");
+    }
+    if (pecosMonitor.busFltMngr.vptr->GetTrapStatus_LSPERR(&(pecosMonitor.busFltMngr)) != 0) {       
+		printf("LSPERR\r\n");
+    }
+    if (pecosMonitor.busFltMngr.vptr->GetTrapStatus_PRECISERR(&(pecosMonitor.busFltMngr)) != 0) {       
+		printf("PRECISERR\r\n");
+    }
+    if (pecosMonitor.busFltMngr.vptr->GetTrapStatus_STKERR(&(pecosMonitor.busFltMngr)) != 0) {       
+		printf("STKERR\r\n");
+    }
+    if (pecosMonitor.busFltMngr.vptr->GetTrapStatus_UNSTKERR(&(pecosMonitor.busFltMngr)) != 0) {       
+		printf("UNSTKERR\r\n");
+    }
+   pecosMonitor.sysMngr.vptr->ResetSystem(&(pecosMonitor.sysMngr));
    while (true)
    {
    }

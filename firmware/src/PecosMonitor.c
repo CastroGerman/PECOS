@@ -1,7 +1,7 @@
 /*
- * PecosMonitor.c
+ * File: PecosMonitor.c
  *
- * This file was made following the official ARM®v7-M Architecture Reference Manual
+ * This file was made following the official ARMï¿½v7-M Architecture Reference Manual
  * https://web.eecs.umich.edu/~prabal/teaching/eecs373-f10/readings/ARMv7-M_ARM.pdf
  *
  * Author: German Castro
@@ -47,6 +47,69 @@ void UsageFaultManager_ctor(UsageFaultManager * const me, volatile uint32_t *CCR
 	assert(SHCSR);
 	me->SHCSR = SHCSR;
 }
+
+/*------ Bus Fault Manager Facilities ------*/
+
+BusFaultManagerSignal BusFaultManager_ClearTrapStatus_DIV0TRP(BusFaultManager * const me) {
+	*(me->CFSR) |= (1UL << 25U);
+	return BUSFAULTMANAGER_OK_SIG;
+}
+
+BusFaultManagerSignal BusFaultManager_EnableHandler(BusFaultManager * const me) {
+	*(me->SHCSR) |= (1UL << 18U);
+	return BUSFAULTMANAGER_OK_SIG;
+}
+
+BusFaultManagerSignal BusFaultManager_EnableTrap_DIV0TRP(BusFaultManager * const me) {
+	*(me->CCR) |= (1UL << 4U);
+	return BUSFAULTMANAGER_OK_SIG;
+}
+
+uint8_t BusFaultManager_GetTrapStatus_BFARVALID(BusFaultManager * const me) {
+    return ((*(me->CFSR) >> 15U) & 1UL);
+}
+
+uint8_t BusFaultManager_GetTrapStatus_LSPERR(BusFaultManager * const me) {
+    return ((*(me->CFSR) >> 13U) & 1UL);
+}
+
+uint8_t BusFaultManager_GetTrapStatus_STKERR(BusFaultManager * const me) {
+    return ((*(me->CFSR) >> 12U) & 1UL);
+}
+
+uint8_t BusFaultManager_GetTrapStatus_UNSTKERR(BusFaultManager * const me) {
+    return ((*(me->CFSR) >> 11U) & 1UL);
+}
+
+uint8_t BusFaultManager_GetTrapStatus_IMPRECISERR(BusFaultManager * const me) {
+    return ((*(me->CFSR) >> 10U) & 1UL);
+}
+
+uint8_t BusFaultManager_GetTrapStatus_PRECISERR(BusFaultManager * const me) {
+    return ((*(me->CFSR) >> 9U) & 1UL);
+}
+
+void BusFaultManager_ctor(BusFaultManager * const me, volatile uint32_t *CCR, volatile uint32_t *CFSR, volatile uint32_t *SHCSR) {
+	static const BusFaultManagerVT vTable = {
+			.ClearTrapStatus_DIV0TRP = &BusFaultManager_ClearTrapStatus_DIV0TRP,
+			.EnableHandler = &BusFaultManager_EnableHandler,
+			.EnableTrap_DIV0TRP = &BusFaultManager_EnableTrap_DIV0TRP,
+			.GetTrapStatus_BFARVALID = &BusFaultManager_GetTrapStatus_BFARVALID,
+            .GetTrapStatus_LSPERR = &BusFaultManager_GetTrapStatus_LSPERR,
+            .GetTrapStatus_STKERR = &BusFaultManager_GetTrapStatus_STKERR,
+            .GetTrapStatus_UNSTKERR = &BusFaultManager_GetTrapStatus_UNSTKERR,
+            .GetTrapStatus_IMPRECISERR = &BusFaultManager_GetTrapStatus_IMPRECISERR,
+            .GetTrapStatus_PRECISERR = &BusFaultManager_GetTrapStatus_PRECISERR
+	};
+	me->vptr = &vTable;
+	assert(CCR);
+	me->CCR = CCR;
+	assert(CFSR);
+	me->CFSR = CFSR;
+	assert(SHCSR);
+	me->SHCSR = SHCSR;
+}
+
 
 /*------ System Manager Facilities ------*/
 
@@ -121,4 +184,5 @@ void PecosMonitor_ctor(PecosMonitor * const me, volatile uint32_t *AIRCR, volati
 	me->excReturn = 0;
 	SystemManager_ctor(&(me->sysMngr), AIRCR);
 	UsageFaultManager_ctor(&(me->usgFltMngr), CCR, CFSR, SHCSR);
+	BusFaultManager_ctor(&(me->busFltMngr), CCR, CFSR, SHCSR);
 }

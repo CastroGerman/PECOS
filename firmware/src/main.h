@@ -1,8 +1,6 @@
 /* 
  * File:   main.h
- * Author: german
- *
- * Created on September 14, 2022, 9:33 PM
+ * Author: German Castro
  */
 
 #ifndef MAIN_H
