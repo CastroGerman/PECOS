@@ -73,12 +73,12 @@ int main ( void )
     LED_Off();
     printf("Starting PECOS test.\r\n");
 
+    uint32_t vector[4] = {1, 2, 4, 6};
     while ( true )
     {
         //for(int i = 0; i < 1000000000; ++i){}
         LED_Toggle();
         //printf("Keep Alive\r\n");
-        uint32_t vector[4] = {1, 2, 4, 6};
         VarianTheFirst(vector, (sizeof(vector) / sizeof(vector[0])));
     }
 
