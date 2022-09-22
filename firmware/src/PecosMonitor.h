@@ -27,10 +27,15 @@ typedef enum UsageFaultManagerSignal {
 typedef struct UsageFaultManager UsageFaultManager;
 
 typedef struct UsageFaultManagerVT {
-	UsageFaultManagerSignal (*ClearTrapStatus_DIV0TRP)(UsageFaultManager * const me);
+	UsageFaultManagerSignal (*ClearTrapStatus_DIVBYZERO)(UsageFaultManager * const me);
 	UsageFaultManagerSignal (*EnableHandler)(UsageFaultManager * const me);
-	UsageFaultManagerSignal (*EnableTrap_DIV0TRP)(UsageFaultManager * const me);
-	uint8_t (*GetTrapStatus_DIV0TRP)(UsageFaultManager * const me);
+	UsageFaultManagerSignal (*EnableTrap_DIVBYZERO)(UsageFaultManager * const me);
+	uint8_t (*GetTrapStatus_DIVBYZERO)(UsageFaultManager * const me);
+	uint8_t (*GetTrapStatus_UNALIGNED)(UsageFaultManager * const me);
+	uint8_t (*GetTrapStatus_NOCP)(UsageFaultManager * const me);
+	uint8_t (*GetTrapStatus_INVPC)(UsageFaultManager * const me);
+	uint8_t (*GetTrapStatus_INVSTATE)(UsageFaultManager * const me);
+	uint8_t (*GetTrapStatus_UNDEFINSTR)(UsageFaultManager * const me);
 }UsageFaultManagerVT;
 
 struct UsageFaultManager {
@@ -40,10 +45,15 @@ struct UsageFaultManager {
 	volatile uint32_t *SHCSR; /* System Handler Control and State Register */
 };
 
-UsageFaultManagerSignal UsageFaultManager_ClearTrapStatus_DIV0TRP(UsageFaultManager * const me);
+UsageFaultManagerSignal UsageFaultManager_ClearTrapStatus_DIVBYZERO(UsageFaultManager * const me);
 UsageFaultManagerSignal UsageFaultManager_EnableHandler(UsageFaultManager * const me);
-UsageFaultManagerSignal UsageFaultManager_EnableTrap_DIV0TRP(UsageFaultManager * const me);
-uint8_t UsageFaultManager_GetTrapStatus_DIV0TRP(UsageFaultManager * const me);
+UsageFaultManagerSignal UsageFaultManager_EnableTrap_DIVBYZERO(UsageFaultManager * const me);
+uint8_t UsageFaultManager_GetTrapStatus_DIVBYZERO(UsageFaultManager * const me);
+uint8_t UsageFaultManager_GetTrapStatus_UNALIGNED(UsageFaultManager * const me);
+uint8_t UsageFaultManager_GetTrapStatus_NOCP(UsageFaultManager * const me);
+uint8_t UsageFaultManager_GetTrapStatus_INVPC(UsageFaultManager * const me);
+uint8_t UsageFaultManager_GetTrapStatus_INVSTATE(UsageFaultManager * const me);
+uint8_t UsageFaultManager_GetTrapStatus_UNDEFINSTR(UsageFaultManager * const me);
 void UsageFaultManager_ctor(UsageFaultManager * const me, volatile uint32_t *CCR, volatile uint32_t *CFSR, volatile uint32_t *SHCSR);
 
 
@@ -57,9 +67,7 @@ typedef enum BusFaultManagerSignal {
 typedef struct BusFaultManager BusFaultManager;
 
 typedef struct BusFaultManagerVT {
-	BusFaultManagerSignal (*ClearTrapStatus_DIV0TRP)(BusFaultManager * const me);
 	BusFaultManagerSignal (*EnableHandler)(BusFaultManager * const me);
-	BusFaultManagerSignal (*EnableTrap_DIV0TRP)(BusFaultManager * const me);
 	uint8_t (*GetTrapStatus_BFARVALID)(BusFaultManager * const me);
 	uint8_t (*GetTrapStatus_LSPERR)(BusFaultManager * const me);
 	uint8_t (*GetTrapStatus_STKERR)(BusFaultManager * const me);
@@ -75,9 +83,7 @@ struct BusFaultManager {
 	volatile uint32_t *SHCSR; /* System Handler Control and State Register */
 };
 
-BusFaultManagerSignal BusFaultManager_ClearTrapStatus_DIV0TRP(BusFaultManager * const me);
 BusFaultManagerSignal BusFaultManager_EnableHandler(BusFaultManager * const me);
-BusFaultManagerSignal BusFaultManager_EnableTrap_DIV0TRP(BusFaultManager * const me);
 uint8_t BusFaultManager_GetTrapStatus_BFARVALID(BusFaultManager * const me);
 uint8_t BusFaultManager_GetTrapStatus_LSPERR(BusFaultManager * const me);
 uint8_t BusFaultManager_GetTrapStatus_STKERR(BusFaultManager * const me);

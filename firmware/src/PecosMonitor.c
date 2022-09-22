@@ -13,7 +13,7 @@
 
 /*------ Usage Fault Manager Facilities ------*/
 
-UsageFaultManagerSignal UsageFaultManager_ClearTrapStatus_DIV0TRP(UsageFaultManager * const me) {
+UsageFaultManagerSignal UsageFaultManager_ClearTrapStatus_DIVBYZERO(UsageFaultManager * const me) {
 	*(me->CFSR) |= (1UL << 25U);
 	return USAGEFAULTMANAGER_OK_SIG;
 }
@@ -23,21 +23,46 @@ UsageFaultManagerSignal UsageFaultManager_EnableHandler(UsageFaultManager * cons
 	return USAGEFAULTMANAGER_OK_SIG;
 }
 
-UsageFaultManagerSignal UsageFaultManager_EnableTrap_DIV0TRP(UsageFaultManager * const me) {
+UsageFaultManagerSignal UsageFaultManager_EnableTrap_DIVBYZERO(UsageFaultManager * const me) {
 	*(me->CCR) |= (1UL << 4U);
 	return USAGEFAULTMANAGER_OK_SIG;
 }
 
-uint8_t UsageFaultManager_GetTrapStatus_DIV0TRP(UsageFaultManager * const me) {
+uint8_t UsageFaultManager_GetTrapStatus_DIVBYZERO(UsageFaultManager * const me) {
 	return ((*(me->CFSR) >> 25U) & 1UL);
+}
+
+uint8_t UsageFaultManager_GetTrapStatus_UNALIGNED(UsageFaultManager * const me) {
+	return ((*(me->CFSR) >> 24U) & 1UL);
+}
+
+uint8_t UsageFaultManager_GetTrapStatus_NOCP(UsageFaultManager * const me) {
+	return ((*(me->CFSR) >> 19U) & 1UL);
+}
+
+uint8_t UsageFaultManager_GetTrapStatus_INVPC(UsageFaultManager * const me) {
+	return ((*(me->CFSR) >> 18U) & 1UL);
+}
+
+uint8_t UsageFaultManager_GetTrapStatus_INVSTATE(UsageFaultManager * const me) {
+	return ((*(me->CFSR) >> 17U) & 1UL);
+}
+
+uint8_t UsageFaultManager_GetTrapStatus_UNDEFINSTR(UsageFaultManager * const me) {
+	return ((*(me->CFSR) >> 16U) & 1UL);
 }
 
 void UsageFaultManager_ctor(UsageFaultManager * const me, volatile uint32_t *CCR, volatile uint32_t *CFSR, volatile uint32_t *SHCSR) {
 	static const UsageFaultManagerVT vTable = {
-			.ClearTrapStatus_DIV0TRP = &UsageFaultManager_ClearTrapStatus_DIV0TRP,
+			.ClearTrapStatus_DIVBYZERO = &UsageFaultManager_ClearTrapStatus_DIVBYZERO,
 			.EnableHandler = &UsageFaultManager_EnableHandler,
-			.EnableTrap_DIV0TRP = &UsageFaultManager_EnableTrap_DIV0TRP,
-			.GetTrapStatus_DIV0TRP = &UsageFaultManager_GetTrapStatus_DIV0TRP
+			.EnableTrap_DIVBYZERO = &UsageFaultManager_EnableTrap_DIVBYZERO,
+			.GetTrapStatus_DIVBYZERO = &UsageFaultManager_GetTrapStatus_DIVBYZERO,
+            .GetTrapStatus_INVPC = &UsageFaultManager_GetTrapStatus_INVPC,
+            .GetTrapStatus_INVSTATE = &UsageFaultManager_GetTrapStatus_INVSTATE,
+            .GetTrapStatus_NOCP = &UsageFaultManager_GetTrapStatus_NOCP,
+            .GetTrapStatus_UNALIGNED = &UsageFaultManager_GetTrapStatus_UNALIGNED,
+            .GetTrapStatus_UNDEFINSTR = &UsageFaultManager_GetTrapStatus_UNDEFINSTR
 	};
 	me->vptr = &vTable;
 	assert(CCR);
@@ -50,18 +75,8 @@ void UsageFaultManager_ctor(UsageFaultManager * const me, volatile uint32_t *CCR
 
 /*------ Bus Fault Manager Facilities ------*/
 
-BusFaultManagerSignal BusFaultManager_ClearTrapStatus_DIV0TRP(BusFaultManager * const me) {
-	*(me->CFSR) |= (1UL << 25U);
-	return BUSFAULTMANAGER_OK_SIG;
-}
-
 BusFaultManagerSignal BusFaultManager_EnableHandler(BusFaultManager * const me) {
 	*(me->SHCSR) |= (1UL << 18U);
-	return BUSFAULTMANAGER_OK_SIG;
-}
-
-BusFaultManagerSignal BusFaultManager_EnableTrap_DIV0TRP(BusFaultManager * const me) {
-	*(me->CCR) |= (1UL << 4U);
 	return BUSFAULTMANAGER_OK_SIG;
 }
 
@@ -91,9 +106,7 @@ uint8_t BusFaultManager_GetTrapStatus_PRECISERR(BusFaultManager * const me) {
 
 void BusFaultManager_ctor(BusFaultManager * const me, volatile uint32_t *CCR, volatile uint32_t *CFSR, volatile uint32_t *SHCSR) {
 	static const BusFaultManagerVT vTable = {
-			.ClearTrapStatus_DIV0TRP = &BusFaultManager_ClearTrapStatus_DIV0TRP,
 			.EnableHandler = &BusFaultManager_EnableHandler,
-			.EnableTrap_DIV0TRP = &BusFaultManager_EnableTrap_DIV0TRP,
 			.GetTrapStatus_BFARVALID = &BusFaultManager_GetTrapStatus_BFARVALID,
             .GetTrapStatus_LSPERR = &BusFaultManager_GetTrapStatus_LSPERR,
             .GetTrapStatus_STKERR = &BusFaultManager_GetTrapStatus_STKERR,
@@ -124,7 +137,7 @@ SystemManagerSignal SystemManager_PrintFaultStackFrame(SystemManager * const me,
 		__asm__ ("mrs %[stackFrame], msp" : [stackFrame] "=r" (stackFrame));
 	}
 
-	printf("[Fault Stack Frame]\r\n");
+	printf("\r\n[Fault Stack Frame]\r\n");
 	printf("r0 = 0x%lx\r\n", stackFrame[0 + calleeStackSizeUsed/4]);
 	printf("r1 = 0x%lx\r\n", stackFrame[1 + calleeStackSizeUsed/4]);
 	printf("r2 = 0x%lx\r\n", stackFrame[2 + calleeStackSizeUsed/4]);

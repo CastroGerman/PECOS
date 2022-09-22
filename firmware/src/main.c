@@ -68,10 +68,10 @@ int main ( void )
     /* Initialize all modules */
     SYS_Initialize ( NULL );
     PecosMonitor_ctor(&pecosMonitor, &(SCB->AIRCR), &(SCB->CCR), &(SCB->CFSR), &(SCB->SHCSR));
-    pecosMonitor.usgFltMngr.vptr->EnableTrap_DIV0TRP(&(pecosMonitor.usgFltMngr));
+    pecosMonitor.usgFltMngr.vptr->EnableTrap_DIVBYZERO(&(pecosMonitor.usgFltMngr));
     pecosMonitor.usgFltMngr.vptr->EnableHandler(&(pecosMonitor.usgFltMngr));
     LED_Off();
-    printf("Starting PECOS test.\r\n");
+    printf("\r\nStarting PECOS test.\r\n");
 
     uint32_t vector[4] = {1, 2, 4, 6};
     while ( true )

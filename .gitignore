@@ -18,3 +18,4 @@
 **/*.KEIL/*.uvguix.*
 Gemfile*
 *.vscode
+*.log

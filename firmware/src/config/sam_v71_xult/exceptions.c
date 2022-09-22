@@ -110,25 +110,26 @@ void __attribute__((noreturn)) BusFault_Handler(void)
 #if defined(__DEBUG) || defined(__DEBUG_D) && defined(__XC32)
    __builtin_software_breakpoint();
 #endif    
-    printf("BusFault\r\n");
+    printf("BusFault");
     if (pecosMonitor.busFltMngr.vptr->GetTrapStatus_BFARVALID(&(pecosMonitor.busFltMngr)) != 0) {       
-		printf("BFARVALID\r\n");
+		printf(" - BFARVALID");
     }
     if (pecosMonitor.busFltMngr.vptr->GetTrapStatus_IMPRECISERR(&(pecosMonitor.busFltMngr)) != 0) {       
-		printf("IMPRECISERR\r\n");
+		printf(" - IMPRECISERR");
     }
     if (pecosMonitor.busFltMngr.vptr->GetTrapStatus_LSPERR(&(pecosMonitor.busFltMngr)) != 0) {       
-		printf("LSPERR\r\n");
+		printf(" - LSPERR");
     }
     if (pecosMonitor.busFltMngr.vptr->GetTrapStatus_PRECISERR(&(pecosMonitor.busFltMngr)) != 0) {       
-		printf("PRECISERR\r\n");
+		printf(" - PRECISERR");
     }
     if (pecosMonitor.busFltMngr.vptr->GetTrapStatus_STKERR(&(pecosMonitor.busFltMngr)) != 0) {       
-		printf("STKERR\r\n");
+		printf(" - STKERR");
     }
     if (pecosMonitor.busFltMngr.vptr->GetTrapStatus_UNSTKERR(&(pecosMonitor.busFltMngr)) != 0) {       
-		printf("UNSTKERR\r\n");
+		printf(" - UNSTKERR");
     }
+    printf("\r\n");
    pecosMonitor.sysMngr.vptr->ResetSystem(&(pecosMonitor.sysMngr));
    while (true)
    {
@@ -144,14 +145,31 @@ void __attribute__((noreturn)) UsageFault_Handler(void)
 	unsigned int excReturn;
 	__asm__ ("mov %[excReturn], lr" : [excReturn] "=r" (excReturn));
 	pecosMonitor.vptr->SaveExcReturn(&pecosMonitor, excReturn);
-	if (pecosMonitor.usgFltMngr.vptr->GetTrapStatus_DIV0TRP(&(pecosMonitor.usgFltMngr)) != 0) {
-		printf("Division by zero detected!\r\n");
+    
+	printf("UsageFault");
+    
+	if (pecosMonitor.usgFltMngr.vptr->GetTrapStatus_DIVBYZERO(&(pecosMonitor.usgFltMngr)) != 0) {
+		printf(" - DIVBYZERO");
 		pecosMonitor.vptr->PrintFaultStackFrame(&pecosMonitor, 0x08);
-		pecosMonitor.sysMngr.vptr->ResetSystem(&(pecosMonitor.sysMngr));
 	}
-	printf("UsageFault\r\n");
-	NVIC_SystemReset();
-   while (1)
+    if (pecosMonitor.usgFltMngr.vptr->GetTrapStatus_INVPC(&(pecosMonitor.usgFltMngr)) != 0) {
+		printf(" - INVPC");
+	}
+    if (pecosMonitor.usgFltMngr.vptr->GetTrapStatus_INVSTATE(&(pecosMonitor.usgFltMngr)) != 0) {
+		printf(" - INVSTATE");
+	}
+    if (pecosMonitor.usgFltMngr.vptr->GetTrapStatus_NOCP(&(pecosMonitor.usgFltMngr)) != 0) {
+		printf(" - NOCP");
+	}
+    if (pecosMonitor.usgFltMngr.vptr->GetTrapStatus_UNALIGNED(&(pecosMonitor.usgFltMngr)) != 0) {
+		printf(" - UNALIGNED");
+	}
+    if (pecosMonitor.usgFltMngr.vptr->GetTrapStatus_UNDEFINSTR(&(pecosMonitor.usgFltMngr)) != 0) {
+		printf(" - UNDEFINSTR");
+	}
+    printf("\r\n");
+	pecosMonitor.sysMngr.vptr->ResetSystem(&(pecosMonitor.sysMngr));
+   while (true)
    {
    }
 }
