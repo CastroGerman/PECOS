@@ -73,13 +73,17 @@ int main ( void )
     LED_Off();
     printf("\r\nStarting PECOS test.\r\n");
 
-    uint32_t vector[4] = {1, 2, 4, 6};
+    uint32_t vector[4] = {1, 2, 3, 4};
     while ( true )
     {
-        //for(int i = 0; i < 1000000000; ++i){}
         LED_Toggle();
-        //printf("Keep Alive\r\n");
+        //vector[0] = 1;
         VarianTheFirst(vector, (sizeof(vector) / sizeof(vector[0])));
+        /*if(vector[0] != 2){
+            printf("Fail Silent\r\n");
+            pecosMonitor.sysMngr.vptr->ResetSystem(&(pecosMonitor.sysMngr));
+        }*/
+        
     }
 
     /* Execution should not come here during normal operation */

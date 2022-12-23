@@ -221,7 +221,7 @@
       <itemPath>../src/PecosMonitor.h</itemPath>
       <itemPath>../src/PecosMonitor.c</itemPath>
       <itemPath>../src/main.h</itemPath>
-      <itemPath>../src/dummy.s</itemPath>
+      <itemPath>dummy.s</itemPath>
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>
