@@ -11,7 +11,7 @@ def print_serial(name):
         print(f"The Port name is {serial_port.name}")
         while True:
             lines = serial_port.readline()
-            print("{}   {}".format(time.time(),lines))
+            print("{} \t{}".format(time.time(),lines))
     except:
         print("ERROR")
         print("check port")
